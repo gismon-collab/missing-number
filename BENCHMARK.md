@@ -1,68 +1,112 @@
-\# Missing Number – Benchmark and Interpretation
+# Missing Number – Benchmark and Interpretation
 
+## 1. Objective
 
+The objective is to find the missing number from the sequence 1, 2, ..., n using Rust.
 
-\## 1. Objective
+This project compares two algorithms:
+- Sum Algorithm
+- XOR Algorithm
 
-The main objective is to find the missing number from the sequence 1, 2, ..., n using Rust.
+## 2. Algorithms
 
-
-
-\## 2. Algorithm
+### Sum Algorithm
 
 The missing number is calculated using the mathematical formula:
 
-
-
 Missing Number = n × (n + 1) / 2 − Sum of Given Numbers
 
+### XOR Algorithm
 
+The XOR algorithm applies the XOR operation to all expected numbers and all given numbers. Matching numbers cancel each other, leaving the missing number.
 
-\## 3. Time Complexity
+## 3. Time Complexity
 
-\*\*O(n)\*\*
+Both algorithms have O(n) time complexity.
 
+- Sum Algorithm: Iterates through the given numbers once.
+- XOR Algorithm: Iterates through the expected numbers and the given numbers separately.
 
+## 4. Space Complexity
 
-The algorithm iterates through the given numbers once to calculate their sum.
+Both algorithms require O(1) auxiliary space for the missing-number calculation.
 
+The input vector requires O(n) space because it stores the given numbers.
 
+## 5. Benchmark Setup
 
-\## 4. Space Complexity
+The benchmark was performed using the optimized Rust Cargo bench profile.
 
-\*\*O(n)\*\* for storing the input numbers in the vector used by this implementation.
+Each algorithm was executed 100 times for each input size.
 
+Input sizes:
+- 1,000
+- 10,000
+- 100,000
 
+Processor: 13th Gen Intel Core i5-1335U  
+Operating System: Windows
 
-The missing-number calculation itself requires O(1) auxiliary space.
+## 6. Latest Benchmark Results
 
+| Input Size | Sum Algorithm (100 runs) | XOR Algorithm (100 runs) |
+|---:|---:|---:|
+| 1,000 | 26.3 µs | 151.4 µs |
+| 10,000 | 246.7 µs | 1.7021 ms |
+| 100,000 | 3.2224 ms | 19.3525 ms |
 
+These are total elapsed times for 100 executions of each algorithm.
 
-\## 5. Benchmark Results
+## 7. Interpretation
 
-The benchmark was performed using optimized Rust benchmark mode. Each input size was tested 100 times.
+The benchmark results show that the Sum Algorithm was faster than the XOR Algorithm for all three tested input sizes.
 
-| Input Size | Time for 100 Runs |
-|---|---:|
-| 2,000 | 33.9 µs |
-| 50,000 | 1.0513 ms |
-| 200,000 | 4.5072 ms |
+Both algorithms have O(n) time complexity. However, the XOR implementation performs two separate iterations, while the Sum implementation iterates through the input numbers once.
 
-## 6. Interpretation
+Execution time increased as the input size increased.
 
-The benchmark results show that execution time increases as the input size increases.
+The benchmark repeatedly uses the same input vector. Therefore, CPU caching may influence the measurements. However, cache hits and misses were not measured directly.
 
-- 2,000 numbers: 33.9 microseconds for 100 runs.
-- 50,000 numbers: 1.0513 milliseconds for 100 runs.
-- 200,000 numbers: 4.5072 milliseconds for 100 runs.
+## 8. Memory Usage
 
-The algorithm efficiently processes the input using a single iteration to calculate the sum.
+The input vector stores values as `u64`, with each value requiring 8 bytes.
 
-## 7. Conclusion
+Memory was estimated using the vector's capacity:
 
-The Missing Number problem was successfully implemented using Rust and the mathematical sum formula.
+`numbers.capacity() * size_of::<u64>()`
 
-All 3 integration tests passed successfully. The benchmark was also completed successfully. The solution is suitable for the given constraint of n ≤ 200,000.
+| Input Size | Vector Capacity | Reserved Vector Memory |
+|---:|---:|---:|
+| 1,000 | 1,024 elements | 8,192 bytes (8 KiB) |
+| 10,000 | 16,384 elements | 131,072 bytes (128 KiB) |
+| 100,000 | 131,072 elements | 1,048,576 bytes (1 MiB) |
 
+The vector capacity can be larger than its length because Rust may reserve additional storage as a vector grows.
 
+These figures represent the reserved element buffer of the input vector, not the total memory consumption of the application.
 
+Both algorithms use O(1) auxiliary space, excluding the O(n) input vector.
+
+## 9. CPU Caching Effects
+
+Modern processors use CPU caches to access frequently used data faster than main memory.
+
+The benchmark repeatedly uses the same input vector. This may allow data to remain in CPU cache between executions and influence the measured execution times.
+
+Both algorithms access data sequentially. However, the Sum Algorithm reads the input vector once, while the XOR Algorithm processes the expected sequence and then reads the input vector.
+
+Cache hits and cache misses were not directly measured in this experiment. Hardware performance profiling would be required to obtain actual cache-counter measurements.
+
+Therefore, no numerical cache hit rate or cache miss count is claimed.
+
+## 10. Conclusion
+
+Both algorithms successfully solve the Missing Number problem.
+
+Both have O(n) time complexity and O(1) auxiliary space complexity, excluding the input vector.
+
+Based on the measured results, the Sum Algorithm performed faster than the XOR Algorithm for the tested input sizes.
+
+The experiment demonstrates that algorithms with the same asymptotic complexity can have different practical execution times because of differences in the number of operations, memory access patterns, compiler optimizations, and CPU caching behavior.
+
+Further hardware-level profiling would be required to quantify the exact cache effects.
